@@ -44,7 +44,10 @@ public class GcmRegistrar extends AbstractModelObject implements UnprotectedRoot
                     throws IOException, ServletException {
                 User user = getCurrentUser();
                 if (user == null) {
-                    throw HttpResponses.error(403, "User not authenticated.");
+                    rsp.setStatus(401);
+                    rsp.addHeader("WWW-Authenticate", "Basic realm='Jenkins API'");
+                    rsp.getWriter().write("User not authenticated");
+                    return;
                 }
                 user.addProperty(new GcmUserTokenProperty(token));
                 user.save();
